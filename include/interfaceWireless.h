@@ -5,6 +5,8 @@
 #include "WiFi.h"
 #include "lwip/apps/sntp.h"
 
+#define DEBUG false
+
 class TinterfaceWireless
 {
 

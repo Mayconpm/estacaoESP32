@@ -49,14 +49,14 @@ public:
 
     HTTPClient http;
     String url = ENDERECOSERVIDOR + montaDiretorio(dado);
-    Serial.println(url);
-    http.begin(url.c_str());
+    boolean a = http.begin(url.c_str());
     http.GET();
     String resposta = http.getString();
     http.end();
 
     if (TUtilidadesParaStrings::pegaEntreAspas(resposta, 1).equalsIgnoreCase("OK"))
     {
+      Serial.println("Dados enviados com sucesso.");
       return true;
     }
     return false;
