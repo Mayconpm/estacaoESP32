@@ -10,7 +10,7 @@ public:
   static const String pegaEntreAspas(const String &texto, const int posicaoNoTexto)
   {
     int vc = 0;
-    int inicio;
+    int inicio = 0;
     int fim = -1;
     while (vc < posicaoNoTexto)
     {
