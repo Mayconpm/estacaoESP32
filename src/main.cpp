@@ -18,7 +18,8 @@ void interrupcaoPluviometro()
   sensorPluviometro->interrupcao();
 }
 
-unsigned long int ultimaLeitura;
+unsigned long int ultimaLeituraMenor;
+unsigned long int ultimaLeituraMaior;
 
 void setup()
 {
@@ -33,7 +34,8 @@ void setup()
   interfaceWireless->conectaWifi();
   attachInterrupt(PINOPLUVIOMETRO, interrupcaoPluviometro, RISING);
 
-  ultimaLeitura = 0;
+  ultimaLeituraMenor = 0;
+  ultimaLeituraMaior = 0;
 }
 
 int enviaDadoArquivo()
@@ -75,17 +77,17 @@ int enviaDadoArquivo()
 void loop()
 {
 
-  if (time(NULL) - ultimaLeitura > (INTERVALOENTRELEITURAS * 60) || ultimaLeitura == 0)
+  if (time(NULL) - ultimaLeituraMenor > (INTERVALOENTRELEITURAS * 60) || ultimaLeituraMenor == 0)
   {
 
     TDado dado = sensorPluviometro->ler();
-    if (dado.getValor() > 0)
+    if (dado.getValor() > 0 || time(NULL) - ultimaLeituraMenor > 3600 || ultimaLeituraMaior)
     {
       dado.setTransmitido(comunicacaoServidorHTTP->enviar(dado));
-      armazenamento->armazenar(getTransmitido(dado));
-      enviaDadoArquivo();
+      armazenamento->armazenar(dado);
     }
+    enviaDadoArquivo();
 
-    ultimaLeitura = time(NULL);
+    ultimaLeituraMenor = time(NULL);
   }
 }
