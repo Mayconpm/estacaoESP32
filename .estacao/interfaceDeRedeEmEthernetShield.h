@@ -2,7 +2,6 @@
 #define TINTERFACEDEREDEEMETHERNETSHIELD
 #include <Arduino.h>
 #include <string.h>
-#include "interfaceDeRede.h"
 
 class TInterfaceDeRedeEmEthernetShield : public TInterfaceDeRede
 {

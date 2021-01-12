@@ -10,17 +10,16 @@ class TSensorPluviometro
 
 private:
   int tipo;
-  int pino;
   int numeroDeBasculadas;
   unsigned long int ultimaBasculada;
 
 public:
-  TSensorPluviometro(int tipo = 1, int pino = 18)
+  TSensorPluviometro(int tipo = 1)
   {
     this->tipo = tipo;
-    this->pino = pino;
+    int pino = PINOPLUVIOMETRO;
     this->ultimaBasculada = 0;
-    pinMode(this->pino, INPUT_PULLUP);
+    pinMode(pino, INPUT_PULLUP);
     this->numeroDeBasculadas = 0;
   }
 
@@ -41,11 +40,6 @@ public:
       this->numeroDeBasculadas++;
       this->ultimaBasculada = millis();
     }
-  }
-
-  int getPino()
-  {
-    return this->pino;
   }
 };
 
