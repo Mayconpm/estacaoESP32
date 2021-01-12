@@ -10,14 +10,16 @@ private:
   int tipo;
   double valor;
   String data;
+  boolean transmitido;
 
 public:
   //Construtor:
-  TDado(const int &tipo = 0, const double &valor = 0, const String &data = "")
+  TDado(const int &tipo = 0, const double &valor = 0, const String &data = "1970-01-01_00:00:00", const boolean &transmitido = false)
   {
     this->tipo = tipo;
     this->valor = valor;
     this->data = data;
+    this->transmitido = transmitido;
   }
 
   //Getters e setters do tipo:
@@ -51,6 +53,17 @@ public:
   void setData(const String &data)
   {
     this->data = data;
+  }
+
+  //Getters e setters de transmitido:
+  const boolean &getTransmitido() const
+  {
+    return this->transmitido;
+  }
+
+  void setTransmitido(const double &transmitido)
+  {
+    this->transmitido = transmitido;
   }
 
   const String toString() const

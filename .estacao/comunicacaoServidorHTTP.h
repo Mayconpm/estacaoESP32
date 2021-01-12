@@ -5,16 +5,15 @@
 #include "interfaceDeRedeEmEthernetShield.h"
 #include "utilidadesParaStrings.h"
 
-
-class TComunicacaoServidorHTTP {
+class TComunicacaoServidorHTTP
+{
 
 private:
-
   String chave;
   boolean conectado;
-  TInterfaceDeRede * interfaceDeRede;
 
-  const String montaDiretorio(const TDado & dado) {
+  const String montaDiretorio(const TDado &dado)
+  {
     String diretorio = "/comm.php?chave=";
     diretorio.concat(this->chave);
     diretorio.concat("&tipo=");
@@ -29,63 +28,66 @@ private:
     return diretorio;
   }
 
-  void conectaViaDHCP() {
+  void conectaViaDHCP()
+  {
     this->conectado = false;
     TLog::envia("TENTANDO CONEXAO VIA DHCP...");
     int tentativa = 1;
-    while( tentativa <= TENTATIVASDHCP ) {
+    while (tentativa <= TENTATIVASDHCP)
+    {
       String temp = "TENTANDO CONEXAO VIA DHCP... [";
       temp.concat(tentativa);
       temp.concat("]");
       TLog::envia(temp.c_str());
-      if (interfaceDeRede->conexaoViaDHCP()) {
+      if (interfaceDeRede->conexaoViaDHCP())
+      {
         this->conectado = true;
         break;
       }
       tentativa++;
     }
-    if ( this->conectado ) {
+    if (this->conectado)
+    {
       TLog::envia("CONEXAO VIA DHCP ESTABELECIDA COM SUCESSO");
 
       IPAddress IP = interfaceDeRede->getIP();
       TLog::envia("IP: %d.%d.%d.%d", IP[0], IP[1], IP[2], IP[3]);
-      
+
       IPAddress gateway = interfaceDeRede->getGateway();
       TLog::envia("GATEWAY: %d.%d.%d.%d", gateway[0], gateway[1], gateway[2], gateway[3]);
-    
-    } else {
+    }
+    else
+    {
       TLog::envia("FALHA NA CONEXAO VIA DHCP");
     }
   }
 
 public:
-  
-  TComunicacaoServidorHTTP(byte * mac, String chave) {
+  TComunicacaoServidorHTTP(byte *mac, String chave)
+  {
     this->chave = chave;
-    
+
     this->interfaceDeRede = new TInterfaceDeRedeEmEthernetShield(mac);
 
     this->conectaViaDHCP();
-    
   }
-  
-  boolean enviar(const TDado & dado) {
-    if ( ! this->conectado ) {
+
+  boolean enviar(const TDado &dado)
+  {
+    if (!this->conectado)
+    {
       this->conectaViaDHCP();
       return false;
     }
-    String resposta = this->interfaceDeRede->fazRequisicaoHTTP( ENDERECOSERVIDOR , montaDiretorio( dado ) );
-    if (TUtilidadesParaStrings::pegaEntreAspas(resposta, 1).equalsIgnoreCase("OK")) {
+    String resposta = this->interfaceDeRede->fazRequisicaoHTTP(ENDERECOSERVIDOR, montaDiretorio(dado));
+    if (TUtilidadesParaStrings::pegaEntreAspas(resposta, 1).equalsIgnoreCase("OK"))
+    {
       return true;
     }
     return false;
   }
-  
+
   ~TComunicacaoServidorHTTP() {}
-  
 };
 
 #endif
-
-
-
