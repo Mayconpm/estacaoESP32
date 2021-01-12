@@ -6,7 +6,6 @@
 #include "comunicacaoServidorHTTP.h"
 #include "interfaceWireless.h"
 #include "sensorPluviometro.h"
-#include "utilidades.h"
 
 TArmazenamento *armazenamento;
 TComunicacaoServidorHTTP *comunicacaoServidorHTTP;
@@ -32,7 +31,6 @@ void setup()
 
   interfaceWireless->conectaWifi();
   attachInterrupt(PINOPLUVIOMETRO, interrupcaoPluviometro, RISING);
-
   ultimaLeituraMenor = 0;
   ultimaLeituraMaior = 0;
 }
