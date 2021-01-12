@@ -18,7 +18,7 @@ public:
     {
         if (WiFi.status() != WL_CONNECTED)
         {
-            WiFi.begin("Pluviometro", "d4m14n0IPRJ");
+            WiFi.begin(SSIDWIFI, PASSWORDWIFI);
             delay(1000);
         }
 
@@ -39,7 +39,7 @@ public:
         sntp_stop();
         sntp_setoperatingmode(SNTP_OPMODE_POLL);
         sntp_setservername(0, strdup(SERVIDORNTP));
-        setenv("TZ", "BRST+3", 1);
+        setenv("TZ", TIMEZONE, 1);
         tzset();
 #ifdef CONFIG_SNTP_TIME_SYNC_METHOD_SMOOTH
         sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);

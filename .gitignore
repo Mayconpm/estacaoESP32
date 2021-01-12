@@ -2,4 +2,4 @@
 .vscode/*
 .estacao
 lib
-include\utilidades.h
+include\configuracoes.h
