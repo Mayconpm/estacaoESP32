@@ -2,6 +2,8 @@
 #define TUTILIDADESPARADATAS
 #include <Arduino.h>
 #include <string.h>
+#include "time.h"
+#include "TimeLib.h"
 
 class TUtilidadesParaDatas
 {
@@ -38,11 +40,12 @@ public:
 
   static const String pegaDataAtualEmTexto()
   {
-    return passaDeTimestamp(now());
+    return passaDeTimestamp(time(NULL));
   }
 
   static const String pegaAnoStr(const String &data)
   {
+
     return data.substring(0, 4);
   }
 
@@ -76,50 +79,18 @@ public:
     return data.substring(11, 13);
   }
 
-  static const int pegaHoraInt(const String &data)
-  {
-    return pegaHoraStr(data).toInt();
-  }
-
-  static const String pegaMinutoStr(const String &data)
-  {
-    return data.substring(14, 16);
-  }
-
-  static const int pegaMinutoInt(const String &data)
-  {
-    return pegaMinutoStr(data).toInt();
-  }
-
-  static const String pegaSegundoStr(const String &data)
-  {
-    return data.substring(17, 19);
-  }
-
-  static const int pegaSegundoInt(const String &data)
-  {
-    return pegaSegundoStr(data).toInt();
-  }
-
   static const unsigned long int passaParaTimestamp(const String &data)
   {
-    tmElements_t tm;
-    tm.Year = pegaAnoInt(data) - 1970;
-    tm.Month = pegaMesInt(data);
-    tm.Day = pegaDiaInt(data);
-    tm.Hour = pegaHoraInt(data);
-    tm.Minute = pegaMinutoInt(data);
-    tm.Second = pegaSegundoInt(data);
-
-    time_t data2 = makeTime(tm);
-
+    struct tm datatm;
+    strptime(data.c_str(), "%F_%H:%M:%S", &datatm);
+    time_t data2 = mktime(&datatm);
     return (unsigned long int)data2;
   }
 
   static const String passaDeTimestamp(unsigned long int timestamp)
   {
-    time_t data = timestamp;
-    return passaParaTexto(year(data), month(data), day(data), hour(data), minute(data), second(data));
+    time_t t = timestamp;
+    return passaParaTexto(year(t), month(t), day(t), hour(t) - 3, minute(t), minute(t));
   }
 };
 
