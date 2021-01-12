@@ -2,3 +2,4 @@
 .vscode/*
 .estacao
 lib
+include\utilidades.h
