@@ -45,20 +45,24 @@ public:
     {
       this->conectado = TinterfaceWireless::conectaWifi();
       return false;
+      exit(0);
     }
 
     HTTPClient http;
     String url = ENDERECOSERVIDOR + montaDiretorio(dado);
     http.begin(url.c_str());
-    http.GET();
-    String resposta = http.getString();
+    int httpCode = http.GET();
+    if (httpCode > 0)
+    {
+      String resposta = http.getString();
+      if (TUtilidadesParaStrings::pegaEntreAspas(resposta, 1).equalsIgnoreCase("OK"))
+      {
+        Serial.println("Dados enviados com sucesso.");
+        return true;
+      }
+    }
     http.end();
 
-    if (TUtilidadesParaStrings::pegaEntreAspas(resposta, 1).equalsIgnoreCase("OK"))
-    {
-      Serial.println("Dados enviados com sucesso.");
-      return true;
-    }
     return false;
   }
 
