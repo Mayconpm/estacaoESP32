@@ -1,5 +1,3 @@
-
-
 //Estação
 #define INTERVALOENTRELEITURAS 3 //em minutos
 #define SERVIDORNTP "br.pool.ntp.org"
@@ -23,5 +21,3 @@
 #define VOLUMEBASCULA 0.2
 #define TEMPOMINIMOENTREBASCULADAS 2000
 #define PINOPLUVIOMETRO 18
-
-#define RESETDIARIO
