@@ -100,7 +100,6 @@ private:
     arquivo.concat(TUtilidadesParaDatas::pegaAnoStr(data) + "_");              // concatena o ano
     arquivo.concat(TUtilidadesParaDatas::pegaMesStr(data) + "_");              // concatena o mês
     arquivo.concat(TUtilidadesParaDatas::pegaDiaStr(data) + EXTENSAOARQUIVOS); // concatena o dia
-    Serial.println(arquivo);
     return arquivo;
   }
 
@@ -129,11 +128,11 @@ public:
   boolean armazenar(const TDado &dado)
   {
     boolean resposta = false;
-
     if (!dado.getTransmitido() && this->abreArquivo(montaArquivoTemporario(dado.getData()), true))
     { //se o dado não tiver sido transmitido e caso consiga abrir o arquivo
       this->arquivo.println(dado.toString());
       resposta = true;
+      Serial.println("Dados salvos no arquivo.");
     }
     this->arquivo.close();
 
