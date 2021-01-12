@@ -38,7 +38,7 @@ public:
     {
         sntp_stop();
         sntp_setoperatingmode(SNTP_OPMODE_POLL);
-        sntp_setservername(0, NTP_SRV);
+        sntp_setservername(0, strdup(SERVIDORNTP));
         setenv("TZ", "BRST+3", 1);
         tzset();
 #ifdef CONFIG_SNTP_TIME_SYNC_METHOD_SMOOTH

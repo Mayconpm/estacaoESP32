@@ -49,7 +49,7 @@ public:
 
     HTTPClient http;
     String url = ENDERECOSERVIDOR + montaDiretorio(dado);
-    boolean a = http.begin(url.c_str());
+    http.begin(url.c_str());
     http.GET();
     String resposta = http.getString();
     http.end();

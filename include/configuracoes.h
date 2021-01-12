@@ -2,7 +2,7 @@
 
 //Estação
 #define INTERVALOENTRELEITURAS 1 //em minutos
-#define NTP_SRV "br.pool.ntp.org"
+#define SERVIDORNTP "br.pool.ntp.org"
 #define CHAVEDECOMUNICACAO "05" //chave de identificação única com o servidor
 
 //Comunicação servidor HTTP
