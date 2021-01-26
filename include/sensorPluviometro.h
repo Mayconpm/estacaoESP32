@@ -9,14 +9,12 @@ class TSensorPluviometro
 {
 
 private:
-  int tipo;
   int numeroDeBasculadas;
   unsigned long int ultimaBasculada;
 
 public:
-  TSensorPluviometro(int tipo = 1)
+  TSensorPluviometro()
   {
-    this->tipo = tipo;
     int pino = PINOPLUVIOMETRO;
     this->ultimaBasculada = 0;
     pinMode(pino, INPUT_PULLUP);
@@ -25,10 +23,10 @@ public:
 
   TDado ler()
   {
-    Serial.println("Pluviometro lido");
+    // Serial.println("Pluviometro lido");
     float valor = 1.0 * this->numeroDeBasculadas * VOLUMEBASCULA;
     this->numeroDeBasculadas = 0;
-    TDado dado(this->tipo, valor, TUtilidadesParaDatas::pegaDataAtualEmTexto());
+    TDado dado(valor, TUtilidadesParaDatas::pegaDataAtualEmTexto());
     return dado;
   }
 

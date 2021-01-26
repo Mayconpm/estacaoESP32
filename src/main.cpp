@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <esp_task_wdt.h>
 #include "time.h"
 #include "SPIFFS.h"
 #include "configuracoes.h"
@@ -16,9 +17,7 @@ void interrupcaoPluviometro()
 {
   sensorPluviometro->interrupcao();
 }
-
-unsigned long int ultimaLeituraMenor;
-unsigned long int ultimaLeituraMaior;
+unsigned long int ultimaLeitura;
 
 void setup()
 {
@@ -28,63 +27,20 @@ void setup()
   sensorPluviometro = new TSensorPluviometro();
   comunicacaoServidorHTTP = new TComunicacaoServidorHTTP(CHAVEDECOMUNICACAO);
   interfaceWireless = new TinterfaceWireless();
-
   interfaceWireless->conectaWifi();
   attachInterrupt(PINOPLUVIOMETRO, interrupcaoPluviometro, RISING);
-  ultimaLeituraMenor = 0;
-  ultimaLeituraMaior = 0;
-}
-
-int enviaDadoArquivo()
-{
-
-  boolean enviado = true;
-  File dir = SPIFFS.open(DIRETORIODADOS);
-
-  if (!dir)
-  {
-    return 0;
-  }
-
-  File arquivo = dir.openNextFile();
-
-  while (arquivo)
-  {
-    String dadoStr;
-    while (arquivo.available())
-    {
-      dadoStr = arquivo.readStringUntil('\n');
-      if (!comunicacaoServidorHTTP->enviar(armazenamento->montaDadoString(dadoStr)))
-      {
-        enviado = false;
-        break;
-      }
-    }
-
-    if (enviado)
-    {
-      SPIFFS.remove(arquivo.name());
-    }
-    arquivo = dir.openNextFile();
-  }
-  dir.close();
-  return 1;
+  ultimaLeitura = time(NULL);
 }
 
 void loop()
 {
-
-  if (time(NULL) - ultimaLeituraMenor > (INTERVALOENTRELEITURAS * 60) || ultimaLeituraMenor == 0)
+  if (time(NULL) - ultimaLeitura > (INTERVALOENTRELEITURAS * 60) || ultimaLeitura == 0)
   {
-
     TDado dado = sensorPluviometro->ler();
-    if (dado.getValor() > 0 || time(NULL) - ultimaLeituraMenor > 3600 || ultimaLeituraMaior)
-    {
-      dado.setTransmitido(comunicacaoServidorHTTP->enviar(dado));
-      armazenamento->armazenar(dado);
-    }
-    enviaDadoArquivo();
-
-    ultimaLeituraMenor = time(NULL);
+    interfaceWireless->conectaWifi();
+    dado.setTransmitido(comunicacaoServidorHTTP->enviar(dado));
+    armazenamento->armazenar(dado);
+    armazenamento->enviaDadoArquivo();
+    ultimaLeitura = time(NULL);
   }
 }

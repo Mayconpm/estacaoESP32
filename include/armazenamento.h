@@ -8,8 +8,6 @@
 #include "utilidadesParaStrings.h"
 #include "utilidadesParaDatas.h"
 
-TComunicacaoServidorHTTP *enviar(const TDado &dado);
-
 class TArmazenamento
 {
 
@@ -17,6 +15,7 @@ private:
   boolean inicializado;
   boolean enviado;
   File arquivo;
+  TComunicacaoServidorHTTP *comunicacaoServidorHTTP;
 
   File open(const String &arquivo, const char *modo = FILE_READ)
   {
@@ -59,7 +58,6 @@ private:
       this->arquivo = dir.openNextFile();
       if (!this->arquivo)
       {
-        // no more files
         break;
       }
       String bufferStr = "";
@@ -96,10 +94,10 @@ private:
   const String montaArquivoTemporario(const String &data)
   {
 
-    String arquivo = DIRETORIODADOS;
-    arquivo.concat(TUtilidadesParaDatas::pegaAnoStr(data) + "_");              // concatena o ano
-    arquivo.concat(TUtilidadesParaDatas::pegaMesStr(data) + "_");              // concatena o mês
-    arquivo.concat(TUtilidadesParaDatas::pegaDiaStr(data) + EXTENSAOARQUIVOS); // concatena o dia
+    String arquivo = "/";
+    arquivo.concat(TUtilidadesParaDatas::pegaAnoStr(data) + "_");    // concatena o ano
+    arquivo.concat(TUtilidadesParaDatas::pegaMesStr(data) + "_");    // concatena o mês
+    arquivo.concat(TUtilidadesParaDatas::pegaDiaStr(data) + ".txt"); // concatena o dia
     return arquivo;
   }
 
@@ -121,7 +119,7 @@ public:
 
   const TDado montaDadoString(const String &dadoStr)
   {
-    TDado dado(TUtilidadesParaStrings::pegaEntreAspas(dadoStr, 1).toInt(), TUtilidadesParaStrings::pegaEntreAspas(dadoStr, 2).toFloat(), TUtilidadesParaStrings::pegaEntreAspas(dadoStr, 3));
+    TDado dado(TUtilidadesParaStrings::pegaEntreAspas(dadoStr, 1).toFloat(), TUtilidadesParaStrings::pegaEntreAspas(dadoStr, 2));
     return dado;
   }
 
@@ -138,11 +136,42 @@ public:
 
     return resposta;
   }
+
+  int enviaDadoArquivo()
+  {
+    boolean enviado = true;
+    File dir = SPIFFS.open("/");
+    if (!dir)
+    {
+      return 0;
+    }
+    File arquivo = dir.openNextFile();
+    while (arquivo)
+    {
+      String dadoStr;
+      while (arquivo.available())
+      {
+        dadoStr = arquivo.readStringUntil('\n');
+        if (comunicacaoServidorHTTP->enviar(montaDadoString(dadoStr)))
+        {
+          enviado = false;
+          break;
+        }
+      }
+      if (enviado)
+      {
+        Serial.println("remover arquivo");
+        SPIFFS.remove(arquivo.name());
+      }
+      arquivo = dir.openNextFile();
+    }
+    dir.close();
+    return 1;
+  }
   double pegaSomaMinutosAntecedentes(int tipo, unsigned long int minutos)
   {
     double soma = 0;
     unsigned long int momentoFinal = time(NULL);
-    // unsigned long int momentoFinal = now();
     unsigned long int momentoInicial = momentoFinal - (minutos * 60);
 
     unsigned long int diasDiferenca = ceil((momentoFinal - momentoInicial) / 86400.0);
@@ -172,7 +201,7 @@ public:
   void apagaArquivo()
   {
     this->arquivo.close();
-    File dir = this->open(DIRETORIODADOS);
+    File dir = this->open("/");
 
     if (!dir)
     {

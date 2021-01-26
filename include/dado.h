@@ -14,23 +14,11 @@ private:
 
 public:
   //Construtor:
-  TDado(const int &tipo = 0, const double &valor = 0, const String &data = "1970-01-01_00:00:00", const boolean &transmitido = false)
+  TDado(const double &valor = 0, const String &data = "2021-01-01_00:00:00", const boolean &transmitido = false)
   {
-    this->tipo = tipo;
     this->valor = valor;
     this->data = data;
     this->transmitido = transmitido;
-  }
-
-  //Getters e setters do tipo:
-  const int &getTipo() const
-  {
-    return this->tipo;
-  }
-
-  void setTipo(const int &tipo)
-  {
-    this->tipo = tipo;
   }
 
   //Getters e setters do valor:
@@ -68,7 +56,9 @@ public:
 
   const String toString() const
   { //segundo const para indicar que o método não altera o objeto
-    return "\"" + String(this->tipo) + "\", \"" + String(this->valor) + "\", \"" + this->data + "\"";
+    String salvar = "\"" + String(this->valor) + "\", \"" + this->data + "\"";
+    Serial.println(salvar);
+    return salvar;
   }
 
   //Destrutor:
