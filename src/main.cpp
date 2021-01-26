@@ -27,7 +27,7 @@ void setup()
   comunicacaoServidorHTTP = new TComunicacaoServidorHTTP(CHAVEDECOMUNICACAO);
   interfaceWireless = new TinterfaceWireless();
 
-  esp_task_wdt_init(4, true);
+  esp_task_wdt_init(60, true);
   esp_task_wdt_add(NULL);
 
   attachInterrupt(PINOPLUVIOMETRO, interrupcaoPluviometro, RISING);
