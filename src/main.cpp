@@ -1,12 +1,11 @@
 #include <Arduino.h>
 #include <esp_task_wdt.h>
-#include "time.h"
-#include "SPIFFS.h"
 #include "configuracoes.h"
 #include "armazenamento.h"
 #include "comunicacaoServidorHTTP.h"
 #include "interfaceWireless.h"
 #include "sensorPluviometro.h"
+#include <esp_task_wdt.h>
 
 TArmazenamento *armazenamento;
 TComunicacaoServidorHTTP *comunicacaoServidorHTTP;
@@ -27,14 +26,19 @@ void setup()
   sensorPluviometro = new TSensorPluviometro();
   comunicacaoServidorHTTP = new TComunicacaoServidorHTTP(CHAVEDECOMUNICACAO);
   interfaceWireless = new TinterfaceWireless();
-  interfaceWireless->conectaWifi();
+
+  esp_task_wdt_init(4, true);
+  esp_task_wdt_add(NULL);
+
   attachInterrupt(PINOPLUVIOMETRO, interrupcaoPluviometro, RISING);
   ultimaLeitura = time(NULL);
+  interfaceWireless->conectaWifi();
 }
 
 void loop()
 {
-  if (time(NULL) - ultimaLeitura > (INTERVALOENTRELEITURAS * 60) || ultimaLeitura == 0)
+
+  if (time(NULL) - ultimaLeitura > (INTERVALOENTRELEITURAS * 60))
   {
     TDado dado = sensorPluviometro->ler();
     interfaceWireless->conectaWifi();
@@ -43,4 +47,5 @@ void loop()
     armazenamento->enviaDadoArquivo();
     ultimaLeitura = time(NULL);
   }
+  esp_task_wdt_reset();
 }
