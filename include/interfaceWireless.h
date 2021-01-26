@@ -3,34 +3,43 @@
 #include <Arduino.h>
 #include <string.h>
 #include "WiFi.h"
+#include "ESP32Ping.h "
 #include "lwip/apps/sntp.h"
 
 #define DEBUG false
 
 class TinterfaceWireless
 {
-
 private:
     WiFiClient Wificlient;
+    boolean primeiraConexao = true;
 
 public:
-    static boolean conectaWifi()
+    void conectaWifi()
     {
+        while (primeiraConexao)
+        {
+            WiFi.begin(SSIDWIFI, PASSWORDWIFI);
+            Serial.println("Tentando se conectar a rede Wireless.");
+            delay(1000);
+            if (Ping.ping("www.google.com", 3))
+            {
+                this->primeiraConexao = false;
+                Serial.println("WiFi conectada.");
+                initialize_sntp();
+            }
+            else
+            {
+                WiFi.begin(SSIDWIFI, PASSWORDWIFI);
+                Serial.println("Tentando se conectar a rede Wireless.");
+                delay(1000);
+            }
+        }
         if (WiFi.status() != WL_CONNECTED)
         {
             WiFi.begin(SSIDWIFI, PASSWORDWIFI);
+            Serial.println("Tentando se conectar a rede Wireless.");
             delay(1000);
-        }
-
-        if (WiFi.status() == WL_CONNECTED)
-        {
-            initialize_sntp();
-            delay(1000);
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 
@@ -45,6 +54,7 @@ public:
         sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
 #endif
         sntp_init();
+        delay(1000);
     }
 
     IPAddress getIP()

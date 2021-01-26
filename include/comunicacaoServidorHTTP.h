@@ -2,11 +2,11 @@
 #define TCOMUNICACAOSERVIDORHTTP
 #include <Arduino.h>
 #include <string.h>
+#include <HTTPClient.h>
 #include "armazenamento.h"
 #include "dado.h"
 #include "interfaceWireless.h"
 #include "utilidadesParaStrings.h"
-#include <HTTPClient.h>
 
 class TComunicacaoServidorHTTP
 {
@@ -14,55 +14,45 @@ class TComunicacaoServidorHTTP
 private:
   String chave;
   boolean conectado;
+  TinterfaceWireless interfaceWireless;
 
-  const String montaDiretorio(const TDado &dado)
+  const String montaURL(const TDado &dado)
   {
-    String diretorio = "/comm.php?chave=";
-    diretorio.concat(this->chave);
-    diretorio.concat("&tipo=");
-    diretorio.concat(dado.getTipo());
-    diretorio.concat("&valor=");
+    String url = "/comm.php?chave=";
+    url.concat(this->chave);
+    url.concat("&tipo=1");
+    url.concat("&valor=");
     String temp = "";
     temp.concat(dado.getValor());
     temp.trim();
-    diretorio.concat(temp);
-    diretorio.concat("&data=");
-    diretorio.concat(dado.getData());
-    return diretorio;
+    url.concat(temp);
+    url.concat("&data=");
+    url.concat(dado.getData());
+    return url;
   }
 
 public:
-  TComunicacaoServidorHTTP(String chave)
+    TComunicacaoServidorHTTP(String chave)
   {
     this->chave = chave;
-
-    TinterfaceWireless::conectaWifi();
+    // interfaceWireless.conectaWifi();
   }
 
   boolean enviar(const TDado &dado)
   {
-    if (!this->conectado)
-    {
-      this->conectado = TinterfaceWireless::conectaWifi();
-      return false;
-      exit(0);
-    }
-
     HTTPClient http;
-    String url = ENDERECOSERVIDOR + montaDiretorio(dado);
+    String url = ENDERECOSERVIDOR + montaURL(dado);
+    Serial.println(url);
     http.begin(url.c_str());
     int httpCode = http.GET();
-    if (httpCode > 0)
+    if (httpCode == 200)
     {
-      String resposta = http.getString();
-      if (TUtilidadesParaStrings::pegaEntreAspas(resposta, 1).equalsIgnoreCase("OK"))
-      {
-        Serial.println("Dados enviados com sucesso.");
-        return true;
-      }
+      Serial.println("Dados enviados com sucesso.");
+      http.end();
+      return true;
     }
-    http.end();
 
+    http.end();
     return false;
   }
 
