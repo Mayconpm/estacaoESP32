@@ -14,6 +14,20 @@ private:
     WiFiClient Wificlient;
     boolean primeiraConexao = true;
 
+    static void initialize_sntp(void)
+    {
+        sntp_stop();
+        sntp_setoperatingmode(SNTP_OPMODE_POLL);
+        sntp_setservername(0, strdup(SERVIDORNTP));
+        setenv("TZ", TIMEZONE, 1);
+        tzset();
+#ifdef CONFIG_SNTP_TIME_SYNC_METHOD_SMOOTH
+        sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
+#endif
+        sntp_init();
+        delay(1000);
+    }
+
 public:
     void conectaWifi()
     {
@@ -42,30 +56,5 @@ public:
             delay(1000);
         }
     }
-
-    static void initialize_sntp(void)
-    {
-        sntp_stop();
-        sntp_setoperatingmode(SNTP_OPMODE_POLL);
-        sntp_setservername(0, strdup(SERVIDORNTP));
-        setenv("TZ", TIMEZONE, 1);
-        tzset();
-#ifdef CONFIG_SNTP_TIME_SYNC_METHOD_SMOOTH
-        sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
-#endif
-        sntp_init();
-        delay(1000);
-    }
-
-    IPAddress getIP()
-    {
-        return WiFi.localIP();
-    }
-
-    IPAddress getGateway()
-    {
-        return WiFi.gatewayIP();
-    }
 };
-
 #endif

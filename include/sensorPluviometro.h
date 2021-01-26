@@ -23,7 +23,7 @@ public:
 
   TDado ler()
   {
-    // Serial.println("Pluviometro lido");
+    Serial.println("Pluviometro lido");
     float valor = 1.0 * this->numeroDeBasculadas * VOLUMEBASCULA;
     this->numeroDeBasculadas = 0;
     TDado dado(valor, TUtilidadesParaDatas::pegaDataAtualEmTexto());

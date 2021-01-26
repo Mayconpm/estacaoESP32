@@ -32,10 +32,9 @@ private:
   }
 
 public:
-    TComunicacaoServidorHTTP(String chave)
+  TComunicacaoServidorHTTP(String chave)
   {
     this->chave = chave;
-    // interfaceWireless.conectaWifi();
   }
 
   boolean enviar(const TDado &dado)

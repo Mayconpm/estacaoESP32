@@ -10,7 +10,6 @@
 
 class TArmazenamento
 {
-
 private:
   boolean inicializado;
   boolean enviado;
@@ -93,7 +92,6 @@ private:
 
   const String montaArquivoTemporario(const String &data)
   {
-
     String arquivo = "/";
     arquivo.concat(TUtilidadesParaDatas::pegaAnoStr(data) + "_");    // concatena o ano
     arquivo.concat(TUtilidadesParaDatas::pegaMesStr(data) + "_");    // concatena o mês
@@ -140,7 +138,7 @@ public:
   int enviaDadoArquivo()
   {
     boolean enviado = true;
-    File dir = SPIFFS.open("/");
+    File dir = open("/");
     if (!dir)
     {
       return 0;
@@ -161,67 +159,13 @@ public:
       if (enviado)
       {
         Serial.println("remover arquivo");
-        SPIFFS.remove(arquivo.name());
+        remove(arquivo.name());
       }
       arquivo = dir.openNextFile();
     }
     dir.close();
     return 1;
   }
-  double pegaSomaMinutosAntecedentes(int tipo, unsigned long int minutos)
-  {
-    double soma = 0;
-    unsigned long int momentoFinal = time(NULL);
-    unsigned long int momentoInicial = momentoFinal - (minutos * 60);
-
-    unsigned long int diasDiferenca = ceil((momentoFinal - momentoInicial) / 86400.0);
-
-    for (int i = 0; i < diasDiferenca; i++)
-    {
-      soma += this->somaDadosDiretorio(tipo, this->montaArquivoTemporario(TUtilidadesParaDatas::passaDeTimestamp(momentoFinal - (i * 86400))), momentoInicial, momentoFinal);
-    }
-    return soma;
-  }
-
-  double pegaSomaHorasAntecedentes(int tipo, int horas)
-  {
-    return this->pegaSomaMinutosAntecedentes(tipo, horas * 60);
-  }
-
-  double pegaSomaDiasAntecedentes(int tipo, int dias)
-  {
-    return this->pegaSomaHorasAntecedentes(tipo, dias * 24);
-  }
-
-  double pegaSomaMesesAntecedentes(int tipo, int meses)
-  {
-    return this->pegaSomaDiasAntecedentes(tipo, meses * 30);
-  }
-
-  void apagaArquivo()
-  {
-    this->arquivo.close();
-    File dir = this->open("/");
-
-    if (!dir)
-    {
-      return;
-    }
-
-    String dadoStr = "";
-    while (true)
-    {
-      this->arquivo = dir.openNextFile();
-      SPIFFS.remove(arquivo.name());
-    }
-    dir.close();
-  }
-
-  boolean armazenamentoInicializado()
-  {
-    return this->inicializado;
-  }
-
   ~TArmazenamento() {}
 };
 
